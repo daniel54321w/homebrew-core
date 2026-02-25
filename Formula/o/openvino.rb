@@ -3,10 +3,9 @@ class Openvino < Formula
 
   desc "Open Visual Inference And Optimization toolkit for AI inference"
   homepage "https://docs.openvino.ai"
-  url "https://github.com/openvinotoolkit/openvino/archive/refs/tags/2025.4.1.tar.gz"
-  sha256 "9926c8a8188d0baa9730623efaeb9f0bccf7059f5e4e957a8d238c3226c2b19b"
+  url "https://github.com/openvinotoolkit/openvino/archive/refs/tags/2026.0.0.tar.gz"
+  sha256 "529ce766bcca30991c21d0e065886e175b5210d81d6f6b3d7cdaaa89fe22ea8a"
   license "Apache-2.0"
-  revision 3
   head "https://github.com/openvinotoolkit/openvino.git", branch: "master"
 
   livecheck do
@@ -92,19 +91,12 @@ class Openvino < Formula
   end
 
   resource "packaging" do
-    url "https://files.pythonhosted.org/packages/a1/d4/1fc4078c65507b51b96ca8f8c3ba19e6a61c8253c72794544580a7b6c24d/packaging-25.0.tar.gz"
-    sha256 "d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f"
+    url "https://files.pythonhosted.org/packages/65/ee/299d360cdc32edc7d2cf530f3accf79c4fca01e96ffc950d8a52213bd8e4/packaging-26.0.tar.gz"
+    sha256 "00243ae351a257117b6a241061796684b084ed1c516a08c48a3f7e147a9d80b4"
   end
 
   def python3
     "python3.14"
-  end
-
-  # Fix to initialize HWCAP2_I8MM properly
-  # Remove patch when available in release.
-  patch do
-    url "https://github.com/openvinotoolkit/openvino/commit/168316c62b6022251dd11f4c5b9c0f85da3e425a.patch?full_index=1"
-    sha256 "d905df259b708851651f9544e2f43b9339ec1174c0dfa9879817279534fc702d"
   end
 
   def install
@@ -112,14 +104,11 @@ class Openvino < Formula
     inreplace "thirdparty/dependencies.cmake", "find_package(Protobuf 5.26.0 ",
                                                "find_package(Protobuf 6.30.0 "
 
-    # cmake 4 build patch for third parties
-    ENV["CMAKE_POLICY_VERSION_MINIMUM"] = "3.5"
-
     # FIXME: workaround for
     #   CMake Error at cmake/developer_package/version.cmake:102 (message):
     # OpenVINO_VERSION_MAJOR parsed from CI_BUILD_NUMBER () and from
     # openvino/core/version.hpp (2025) are different
-    ENV["CI_BUILD_NUMBER"] = "#{version}-#{revision}-"
+    # ENV["CI_BUILD_NUMBER"] = "#{version}-#{revision}-"
 
     # Remove git cloned 3rd party to make sure formula dependencies are used
     dependencies = %w[thirdparty/ocl
@@ -190,7 +179,7 @@ class Openvino < Formula
     ENV.append "LDFLAGS", "-Wl,-rpath,#{rpath(source: libexec/site_packages/"openvino/frontend/onnx")}"
 
     # Allow our newer `numpy`
-    inreplace "pyproject.toml", "numpy>=1.16.6,<2.4.0", "numpy>=1.16.6"
+    inreplace "pyproject.toml", "numpy>=1.16.6,<2.5.0", "numpy>=1.16.6"
     venv = virtualenv_create(libexec, python3)
     venv.pip_install resources.select { |r| r.url.start_with?("https://files.pythonhosted.org/") }
     venv.pip_install_and_link "."
