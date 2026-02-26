@@ -1,8 +1,8 @@
 class Libclc < Formula
   desc "Implementation of the library requirements of the OpenCL C programming language"
   homepage "https://libclc.llvm.org/"
-  url "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/libclc-21.1.8.src.tar.xz"
-  sha256 "6c2677362a53531c35edf482bdc9171ea0471ca0a1e9138ac9b5a1782925616f"
+  url "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.0/llvm-project-22.1.0.src.tar.xz"
+  sha256 "25d2e2adc4356d758405dd885fcfd6447bce82a90eb78b6b87ce0934bd077173"
   license "Apache-2.0" => { with: "LLVM-exception" }
 
   livecheck do
@@ -25,7 +25,7 @@ class Libclc < Formula
 
   def install
     llvm_spirv = Formula["spirv-llvm-translator"].opt_bin/"llvm-spirv"
-    system "cmake", "-S", ".", "-B", "build",
+    system "cmake", "-S", "libclc", "-B", "build",
                     "-DLLVM_SPIRV=#{llvm_spirv}",
                     *std_cmake_args
     system "cmake", "--build", "build"
